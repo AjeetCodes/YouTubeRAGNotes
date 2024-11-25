@@ -87,3 +87,49 @@ class YouTubeNotes:
     def convertMarkdownToHtml(self, content):
         html = markdown(content)
         return html
+    def searchQuery(self, request):
+        if request.method == "GET":
+            return render(request, 'youtube_notes/query.html')
+        else:
+            query = request.POST.get('query') 
+            if not query:
+                return render(request, 'youtube_notes/query.html', {"error" : "Field is required."})
+            
+            load_dotenv()
+            # Set up resources
+
+            GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+            genai.configure(api_key=GEMINI_API_KEY)
+            # Instantiate Gemini model
+            # Model choices: https://ai.google.dev/gemini-api/docs/models/gemini
+            genai_model = genai.GenerativeModel('models/gemini-1.5-flash')
+            # Load the vector database, if it exists, otherwise create new on first run
+            chroma_client = chromadb.PersistentClient(path="my_chromadb")
+            # Select an embedding function.
+            # Embedding Function choices:https://docs.trychroma.com/guides/embeddings#custom-embedding-functions
+            gemini_ef  = embedding_functions.GoogleGenerativeAiEmbeddingFunction(api_key=GEMINI_API_KEY)
+            # Load collection, if it exists, otherwise create new on first run. Specify the model that we want to use to do the embedding.
+            chroma_collection = chroma_client.get_or_create_collection(name='youtube_notes', embedding_function=gemini_ef)
+
+            try:
+                # Validation
+                result = chroma_collection.query(
+                    query_texts=query,
+                    n_results=3,
+                    include=["documents"]
+                )
+                documents = result['documents']
+                # print(documents)
+                for content in documents:
+                    content = content[0]
+                # print(content)
+                prompt = "Answer the following QUESTION using DOCUMENT as context."
+                prompt += f"QUESTION: {query}"
+                prompt += f"DOCUMENT: {content}"
+                genai_model = genai.GenerativeModel('models/gemini-1.5-flash')
+                response = genai_model.generate_content(prompt, stream=False)
+                # Extract and format the answer
+                answer = response.text
+            except (AttributeError, IndexError):
+                answer = "No valid response received from the AI model."
+            return render(request, 'youtube_notes/query.html', {"query_results": answer})

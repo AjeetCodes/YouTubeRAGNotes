@@ -11,30 +11,29 @@
     <div class="row">
         <div class="col-md-12">
             <div class="card m-5 p-5">
-                <div class="card-header bg-info">YouTube Video Notes</div>
+                <div class="card-header bg-info">Search Query</div>
                 <div class="card-body">
-                    <form action="" method="post">
+                    <form action="/query" method="post">
                         {% csrf_token %}
                         <div class="form-group">
-                            <input type="hidden" name="yt_id" value="yt_id">
-                            <label for="youtube_id">Enter YouTube Video ID</label>
-                            <input type="text" name="youtube_id" id="youtube_id" class="form-control" placeholder="Enter YouTube Video ID">
+                            <label for="query">Enter Query</label>
+                            <input type="text" name="query" id="query" class="form-control" placeholder="Enter Query">
                             {%if error%}
                              <span class="text-danger">{{error}}</span>
                             {%endif%}
                         </div>
-                        <button type="submit" class="btn btn-primary mt-3">Get Notes</button>
+                        <button type="submit" class="btn btn-primary mt-3">Search Query</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
-    {% if notes %}
+    {% if query_results %}
         <div class="card m-5 p-5">
-            <div class="card-header bg-info">YouTube Video Notes</div>
+            <div class="card-header bg-info">Search Results</div>
             <div class="card-body">
-                {{notes|safe}}
+                {{query_results|safe}}
             </div>
         </div>
     {%endif%}
