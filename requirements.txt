@@ -40,6 +40,7 @@ idna==3.10
 importlib_metadata==8.5.0
 importlib_resources==6.4.5
 kubernetes==31.0.0
+Markdown==3.7
 markdown-it-py==3.0.0
 mdurl==0.1.2
 mmh3==5.0.1
