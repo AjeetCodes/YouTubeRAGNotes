@@ -18,7 +18,7 @@ Welcome to the YouTube RAG Chat App! This application is designed to create deta
 - **Django:** For building the backend and serving the application.
 - **ChromaDB:** A vector database used for storing and querying notes.
 - **YouTube API:** For retrieving video data and generating notes.
-- **Python Libraries:** NumPy, Pandas for data processing.
+- **Python Libraries:** markdown for data processing.
 
 ## Installation
 
