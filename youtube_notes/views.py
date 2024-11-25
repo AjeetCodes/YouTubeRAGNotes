@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 import json
 from django.conf import settings
+from markdown import markdown
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api.formatters import TextFormatter
 
@@ -78,4 +79,11 @@ class YouTubeNotes:
             # Validation
             result = chroma_collection.get(youtube_id, include=['documents'])
             # print(result)
-            return render(request, 'youtube_notes/index.html', {"notes" : result['documents'][0], "youtube_id" :  youtube_id})
+            content = result['documents'][0]
+            html = self.convertMarkdownToHtml(content)
+            # print(html)
+            return render(request, 'youtube_notes/index.html', {"notes" : html, "youtube_id" :  youtube_id})
+    
+    def convertMarkdownToHtml(self, content):
+        html = markdown(content)
+        return html
